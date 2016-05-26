@@ -285,6 +285,7 @@ class MarkupGenerator {
       } else if (entityType != null && entityType === ENTITY_TYPE.MENTION) {
         let attrs = DATA_TO_ATTR.hasOwnProperty(entityType) ? DATA_TO_ATTR[entityType](entityType, entity) : null;
         let strAttrs = stringifyAttrs(attrs);
+        console.log(attrs);
         return `<a${strAttrs}>${content}</a>`;
       } else {
         return content;
