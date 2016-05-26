@@ -68,7 +68,7 @@ const DATA_TO_ATTR = {
   },
   [ENTITY_TYPE.MENTION](entityType: string, entity: EntityInstance): StringMap {
     let attrMap = ENTITY_ATTR_MAP.hasOwnProperty(entityType) ? ENTITY_ATTR_MAP[entityType] : {};
-    let data = entity.getData();
+    let data = entity.getData().mention;
     let attrs = {};
     for (let dataKey of Object.keys(data)) {
       let dataValue = data[dataKey];
@@ -285,7 +285,6 @@ class MarkupGenerator {
       } else if (entityType != null && entityType === ENTITY_TYPE.MENTION) {
         let attrs = DATA_TO_ATTR.hasOwnProperty(entityType) ? DATA_TO_ATTR[entityType](entityType, entity) : null;
         let strAttrs = stringifyAttrs(attrs);
-        console.log(attrs);
         return `<a${strAttrs}>${content}</a>`;
       } else {
         return content;
