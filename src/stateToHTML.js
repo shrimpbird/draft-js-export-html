@@ -4,7 +4,6 @@ import {Entity} from 'draft-js';
 import {
   getEntityRanges,
   BLOCK_TYPE,
-  ENTITY_TYPE,
   INLINE_STYLE,
 } from 'draft-js-utils';
 
@@ -25,10 +24,18 @@ const {
 const INDENT = '  ';
 const BREAK = '<br>';
 
+const ENTITY_TYPE = {
+  LINK: 'LINK',
+  IMAGE: 'IMAGE',
+  MENTION: 'mention'
+};
+
+
 // Map entity data to element attributes.
 const ENTITY_ATTR_MAP: AttrMap = {
   [ENTITY_TYPE.LINK]: {url: 'href', rel: 'rel', target: 'target', title: 'title', className: 'class'},
   [ENTITY_TYPE.IMAGE]: {src: 'src', height: 'height', width: 'width', alt: 'alt', className: 'class'},
+  [ENTITY_TYPE.MENTION]: {link: 'href', className: 'class'},
 };
 
 // Map entity data to element attributes.
@@ -47,6 +54,19 @@ const DATA_TO_ATTR = {
     return attrs;
   },
   [ENTITY_TYPE.IMAGE](entityType: string, entity: EntityInstance): StringMap {
+    let attrMap = ENTITY_ATTR_MAP.hasOwnProperty(entityType) ? ENTITY_ATTR_MAP[entityType] : {};
+    let data = entity.getData();
+    let attrs = {};
+    for (let dataKey of Object.keys(data)) {
+      let dataValue = data[dataKey];
+      if (attrMap.hasOwnProperty(dataKey)) {
+        let attrKey = attrMap[dataKey];
+        attrs[attrKey] = dataValue;
+      }
+    }
+    return attrs;
+  },
+  [ENTITY_TYPE.MENTION](entityType: string, entity: EntityInstance): StringMap {
     let attrMap = ENTITY_ATTR_MAP.hasOwnProperty(entityType) ? ENTITY_ATTR_MAP[entityType] : {};
     let data = entity.getData();
     let attrs = {};
@@ -262,6 +282,10 @@ class MarkupGenerator {
         let attrs = DATA_TO_ATTR.hasOwnProperty(entityType) ? DATA_TO_ATTR[entityType](entityType, entity) : null;
         let strAttrs = stringifyAttrs(attrs);
         return `<img${strAttrs}/>`;
+      } else if (entityType != null && entityType === ENTITY_TYPE.MENTION) {
+        let attrs = DATA_TO_ATTR.hasOwnProperty(entityType) ? DATA_TO_ATTR[entityType](entityType, entity) : null;
+        let strAttrs = stringifyAttrs(attrs);
+        return `<a${strAttrs}>${content}</a>`;
       } else {
         return content;
       }
