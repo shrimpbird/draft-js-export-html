@@ -68,7 +68,7 @@ const DATA_TO_ATTR = {
   },
   [ENTITY_TYPE.MENTION](entityType: string, entity: EntityInstance): StringMap {
     let attrMap = ENTITY_ATTR_MAP.hasOwnProperty(entityType) ? ENTITY_ATTR_MAP[entityType] : {};
-    let data = entity.getData().mention;
+    let data = JSON.parse(JSON.stringify(entity.getData().mention));
     let attrs = {};
     for (let dataKey of Object.keys(data)) {
       let dataValue = data[dataKey];
